@@ -265,11 +265,7 @@ Runs instantly, no API keys, fully deterministic.
 
 1. Run the full demo (server + static UI) with one command:
 
-       export MOCK_MODE=true && npm run dev:server & python3 -m http.server 8000
-
-   (Windows PowerShell equivalent:)
-
-       $env:MOCK_MODE="true"; npm run dev:server; python -m http.server 8000
+       npm run demo:local
 
 2. Open the UI:
 
