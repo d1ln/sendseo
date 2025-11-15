@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>A Super Simple AI Blog Draft Generator</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;max-width:900px;margin:36px auto;padding:0 20px}
+    input{width:100%;padding:10px;border-radius:6px;border:1px solid #ddd;margin-bottom:12px}
+    button{padding:10px 14px;border-radius:6px;background:#2563eb;color:#fff;border:none;cursor:pointer}
+    pre{background:#f8fafc;padding:12px;border-radius:8px;overflow:auto}
+    .result{margin-top:18px}
+  </style>
+</head>
+<body>
+  <h1>A Super Simple AI Blog Draft Generator</h1>
+  <p>Enter a competitor blog URL and click Generate. The server will return a review-ready HTML draft and metrics.</p>
+
+  <input id="url" placeholder="https://example.com/some-article" />
+  <div>
+    <button id="go">Generate</button>
+  </div>
+
+  <div class="result" id="result" style="display:none">
+    <h2 id="title"></h2>
+    <div id="html" style="border:1px solid #eee;padding:12px;border-radius:6px;background:#fff"></div>
+    <h3>Metrics</h3>
+    <pre id="metrics"></pre>
+  </div>
+
+<script>
+  const ENDPOINT = 'http://localhost:3000/generate';
+
+  async function run() {
+    const url = document.getElementById('url').value.trim();
+    if (!url) return alert('Enter a URL');
+
+    const button = document.getElementById('go');
+    const result = document.getElementById('result');
+
+    button.disabled = true;
+    button.textContent = 'Generating…';
+    result.style.display = 'none';
+
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || JSON.stringify(json));
+
+      document.getElementById('title').textContent = json.title || '';
+      document.getElementById('html').innerHTML = json.html || '<p>(no content)</p>';
+      document.getElementById('metrics').textContent = JSON.stringify(json.metrics, null, 2);
+
+      result.style.display = 'block';
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Generate';
+    }
+  }
+
+  document.getElementById('go').addEventListener('click', run);
+
+  // 🔥 ENTER KEY SUPPORT
+  document.getElementById('url').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('go').click();
+    }
+  });
+</script>
+</body>
+</html>
