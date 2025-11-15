@@ -252,7 +252,7 @@ Includes:
 
 1. Clone the repo:
 
-       git clone <your-repo-url>
+       git clone [<this repo>](https://github.com/d1ln/sendseo.git)
        cd seo-blog-generator
 
 2. Install dependencies:
