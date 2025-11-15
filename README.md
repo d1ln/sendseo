@@ -276,7 +276,7 @@ Notes:
 - No API keys required.
 - No network calls.
 - Playwright is disabled automatically.
-- Perfect for interviews and offline demos.
+- Just a minimal demo.
 
 
 ### 🤖 Real LLM Mode (yolo)
