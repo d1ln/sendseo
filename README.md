@@ -310,7 +310,7 @@ Notes:
 - If you remove the flag, browser fallback may require system dependencies.
 
 
-### 🩻 Health Check (Optional)
+### 🩻 Health Check
 
 Verify the server is running:
 
