@@ -1,4 +1,4 @@
-# ✨ AI-Assisted Blog Draft Pipeline
+# 💭 AI-Assisted Blog Draft Pipeline
 
  - **🎯 Goal:** Convert a competitor blog URL → a **safe**, **original**, **SEO-aware**, **review-ready** Sendmarc article.  
 - **Principles:** 🧠 Pragmatic · 🔒 Safe · ⚙️ Deterministic · 🧭 Thoughtful LLM usage
