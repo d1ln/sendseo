@@ -114,32 +114,33 @@ Meets the brief: a **review-ready** blog entry suitable for editorial approval.
 ## 🧹 Fetching
 - **Cheerio:** ⚡ fast, deterministic  
 - **Playwright:** 🖥️ guaranteed completeness when needed  
-**Tradeoff:** Optimizes cost → robustness only when required.
+**Reasoning:** Optimizes cost → robustness only when required.
 
 ## 🧩 Parsing
 - Cheerio for structural extraction  
-**Tradeoff:** Zero hallucinations.
+**Reasoning:** Extremely fast and deterministic, but limited to static HTML. JS-rendered or interactive pages require a fallback (Playwright).
+
 
 ## 🎨 Tone & RAG
 - Embeddings of styleguide & past posts  
-**Tradeoff:** Strong tone enforcement without inflating prompts.
+**Reasoning:** Strong tone enforcement without inflating prompts.
 
 ## ✍️ LLM Strategy
 - Small model → outline  
 - Large model → main draft  
-**Tradeoff:** Best quality per cost.
+**Reasoning:** Best quality per cost.
 
 ## 🛡️ Safety Layer
 - Embedding similarity checks  
-**Tradeoff:** Modern, semantic-level originality scoring.
+**Reasoning:** Modern, semantic-level originality scoring.
 
 ## ⚙️ Orchestration
 - Serverless / Supabase Functions  
-**Tradeoff:** Stateless, scalable, simple.
+**Reasoning:** Stateless, scalable, simple.
 
 ## 🔧 CI
 - GitHub Actions heuristic tests  
-**Tradeoff:** Early detection of extraction drift.
+**Reasoning:** Early detection of extraction drift.
 
 ---
 
@@ -225,7 +226,7 @@ A crawler could periodically discover and ingest competitor posts automatically 
 - Supports automated gap detection across multiple domains  
 - Powers bulk testing of extraction and generation logic  
 
-**Tradeoffs & Risks:**
+**Reasonings & Risks:**
 - Must respect robots.txt and legal boundaries  
 - Requires scheduling, caching, and storage infrastructure  
 - Increased operational cost and complexity  
