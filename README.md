@@ -297,17 +297,13 @@ Uses real OpenAI generation for outline + draft.
 
 2. Start the server:
    
-       npm run dev:server
+       npm run demo:local
 
-3. Serve the UI (if index.html is in repo root):
-
-       python3 -m http.server 8000
-
-4. Open:
+3. Open:
 
        http://localhost:8000/index.html
 
-5. Paste any competitor URL → click **Generate** → LLM-produced draft appears.
+4. Paste any competitor URL → click **Generate** → LLM-produced draft appears.
 
 Notes:
 - Real LLM mode costs tokens.
