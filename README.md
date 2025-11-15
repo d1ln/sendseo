@@ -260,7 +260,7 @@ Includes:
        npm install
 
 
-### ▶️ Mock Mode (no api keys required)
+### 🧙‍♂️ Mock Mode (no api keys required)
 Runs instantly, no API keys, fully deterministic.
 
 1. Run the full demo (server + static UI) with one command:
