@@ -64,6 +64,8 @@ This provides a content **blueprint** without violating IP boundaries.
 
 ---
 
+<div style="page-break-after: always;"></div>
+
 ## 🧠 Semantic Brief
 
 A deterministic mini-spec:
@@ -81,7 +83,7 @@ Reduces hallucination and enforces **brand voice** consistently.
 ## ✍️ Draft Generation
 
 - Section-by-section prompting
-- RAG-conditioned tone
+- Styleguide-conditioned tone
 - HTML output with headings, alt text, metadata
 
 **Why:**  
@@ -102,6 +104,8 @@ Includes:
 Ensures **originality**, **quality**, and **structural SEO readiness**.
 
 ---
+
+<div style="page-break-after: always;"></div>
 
 ## 📤 What the Pipeline Outputs Today
 
@@ -134,6 +138,8 @@ These would expand the pipeline into a _fully publish-ready_ system, while prese
 
 ---
 
+<div style="page-break-after: always;"></div>
+
 # 🧱 3. Architecture & Tooling
 
 ## 🧹 Fetching
@@ -156,7 +162,7 @@ These would expand the pipeline into a _fully publish-ready_ system, while prese
 Styleguide injection is chosen instead of RAG because:
 
 - ⚡ Faster (no embeddings lookup or vector search)
-- 💲 Cheaper (no vector DB required)
+- 💰 Cheaper (no vector DB required)
 - 🔒 Fully deterministic (matches assignment requirement)
 - 🧱 Perfect for fixed rules like tone, formatting, disclaimers, voice, etc.
 - 🎯 Reduces prompt size and avoids semantic drift
@@ -172,17 +178,35 @@ Styleguide injection is chosen instead of RAG because:
 - Embedding similarity checks  
   **Reasoning:** Modern, semantic-level originality scoring.
 
-## ⚙️ Orchestration
+### ⚙️ Orchestration
 
-- Serverless / Supabase Functions  
-  **Reasoning:** Stateless, scalable, simple.
+**Serverless-first design** (e.g., Supabase Functions, Vercel, Cloudflare Workers).
 
-## 🔧 CI
+**Reasoning:**
+- 🧱 **Stateless** — each request is independent  
+- 🔁 **Easily automatable** — perfect for scheduled scans or bulk generation  
+- 🧩 **Simple to deploy** — small, single-purpose functions  
+- 💸 **Cost-efficient** — pay only for usage  
+- 🌍 **Scalable** — handles spikes in load with zero config  
 
-- GitHub Actions heuristic tests  
-  **Reasoning:** Early detection of extraction drift.
+The current implementation runs locally for simplicity,  
+but the architecture is intentionally built to drop into a serverless environment with minimal changes.
+
+### 🔧 CI
+
+**GitHub Actions heuristic tests**
+
+**Reasoning:**
+- 🛰️ **Early detection of extraction drift** — catches changes in competitor site templates  
+- 🧪 **Automated regression checks** — ensures fetch/extract logic remains stable  
+- ⚠️ **Flags brittle selectors** before they affect production  
+- 📊 **Lightweight monitoring** without needing full observability tools  
+
+A small set of deterministic tests helps guarantee that the pipeline remains reliable as websites evolve.
 
 ---
+
+<div style="page-break-after: always;"></div>
 
 # 📊 4. Evaluation & Metrics
 
@@ -213,13 +237,20 @@ Weighted checklist (0–100):
 **Ensures:** Search-ready structure.
 
 ---
+<div style="page-break-after: always;"></div>
 
 ## 📚 Readability & Tone
 
-- `readability_flesch` (50–70 target)
-- `avg_sentence_length`
+- **readability_flesch** (target: 50–70)  
+- **avg_sentence_length** (target: 12–18 words)
 
-**Ensures:** Clear, confident Sendmarc tone.
+**Why this matters:**  
+- 🗣️ Ensures the article sounds **clear, confident, and professional**  
+- ✂️ Detects overly long or complex sentences that slow readers down  
+- 🎯 Keeps the draft aligned with **Sendmarc’s friendly-professional tone**  
+- 🔍 Helps maintain consistency across all auto-generated articles  
+
+These lightweight metrics act as guardrails, not constraints — they help the system flag sections that feel off-brand or hard to read, without interfering with the LLM’s creativity.
 
 ---
 
@@ -236,13 +267,15 @@ Weighted checklist (0–100):
 
 ## 📝 Human Rewrite Rate
 
-- % requiring significant edits
-- Simple "needs rewrite?" toggle  
-  **Ensures:** Practical quality measurement.
+- **Percentage of drafts requiring significant manual edits**  
+- **Human feedback after each article** (informal or structured)
+
+**Why this matters:**  
+Tracks whether the system is producing review-ready content consistently, and highlights where prompts or extraction may need refinement.
 
 ---
 
-# 📡 Monitoring (Notional)
+## 📡 Monitoring (Notional)
 
 The system can track:
 
@@ -255,6 +288,8 @@ The system can track:
 Lightweight and effective — no heavy SEO tooling needed.
 
 ---
+
+<div style="page-break-after: always;"></div>
 
 # 🚀 5. Next Steps (Future Work)
 
