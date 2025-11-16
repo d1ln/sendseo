@@ -95,17 +95,34 @@ Ensures **originality**, **quality**, and **structural SEO readiness**.
 
 ---
 
-## 📤  Review-Ready Output
-The system produces:
-- Full HTML draft  
-- Title + slug  
-- Meta description  
-- JSON-LD Article schema  
-- Internal linking suggestions  
-- Alt-text for all images  
+## 📤 What the Pipeline Outputs Today
 
-**Why:**  
-Meets the brief: a **review-ready** blog entry suitable for editorial approval.
+The pipeline currently returns:
+
+- **Title**  
+- **Structured article body (HTML)** with H2-level sections  
+- **Basic metrics**  
+  - Originality score  
+  - Word count  
+
+**Why:** 
+This keeps the system fast, deterministic, and aligned with the required assignment scope.
+
+---
+
+## 🧱 Optional Future Enhancements (Architecturally Supported)
+
+The design deliberately anticipates additional SEO and editorial modules.  
+These are **not implemented today**, but the architecture supports plugging them in with minimal changes:
+
+- **Meta description generation**  
+- **Slug creation**  
+- **JSON-LD Article schema**  
+- **Internal linking suggestions**  
+- **SEO keyword reinforcement**  
+- **Automatic alt-text generation**
+
+These would expand the pipeline into a *fully publish-ready* system, while preserving safety, originality, and tone control.
 
 ---
 
@@ -118,7 +135,7 @@ Meets the brief: a **review-ready** blog entry suitable for editorial approval.
 
 ## 🧩 Parsing
 - Cheerio for structural extraction  
-**Reasoning:** Extremely fast and deterministic, but limited to static HTML. JS-rendered or interactive pages require a fallback (Playwright).
+**Reasoning:** Fast and deterministic, but limited to static HTML. JS-rendered or interactive pages require a fallback (Playwright).
 
 
 ## 🎨 Tone & Styleguide Conditioning
@@ -136,7 +153,7 @@ Styleguide injection is chosen instead of RAG because:
 ## ✍️ LLM Strategy
 - Small model → outline  
 - Large model → main draft  
-**Reasoning:** Best quality per cost.
+**Reasoning:** Cost effective.
 
 ## 🛡️ Safety Layer
 - Embedding similarity checks  
@@ -225,6 +242,18 @@ Lightweight and effective — no heavy SEO tooling needed.
 - Automated fact checking  
 
 **Why:** These add value but exceed assignment scope.
+
+### ⚡ Potential Performance Enhancements 
+
+The architecture supports adding speed-oriented features such as:
+- Parallel section generation  
+- Outline + draft combined into a single LLM call  
+- Adaptive model selection based on content complexity  
+- Lightweight “speed mode” skipping Playwright and long-context prompts  
+- Persistent caching of extraction results
+
+These are not implemented today, but the system is structured so they can be added with minimal refactoring.
+
 ### 🕷️ Maybe also: add a competitor crawler 
 A crawler could periodically discover and ingest competitor posts automatically instead of relying on manually supplied URLs.
 
@@ -292,18 +321,17 @@ Uses real OpenAI generation for outline + draft.
 
 1. Set environment variables:
 
-   macOS/Linux:
-   
-       export OPENAI_API_KEY="sk-..."
-       export PLAYWRIGHT_ENABLED=false
+    Copy the example env file:
 
-   Windows PowerShell:
+       cp .env.example .env
 
-       $env:OPENAI_API_KEY="sk-..."
-       $env:PLAYWRIGHT_ENABLED="false"
+    Open `.env` and add your keys:
 
-2. Start the server:
-   
+       OPENAI_API_KEY=your_openai_api_key
+       CLAUDE_API_KEY=your_claude_api_key
+
+2. Start the pipeline:
+
        npm run demo:auto
 
 3. Open:
@@ -314,8 +342,6 @@ Uses real OpenAI generation for outline + draft.
 
 Notes:
 - Real LLM mode costs tokens.
-- PLAYWRIGHT_ENABLED=false ensures a stable demo.
-- If you remove the flag, browser fallback may require system dependencies.
 
 
 ### 🩻 Health Check
