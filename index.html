@@ -1,77 +1,181 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>A Super Simple AI Blog Draft Generator</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Blog Draft Generator — Demo</title>
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial;max-width:900px;margin:36px auto;padding:0 20px}
-    input{width:100%;padding:10px;border-radius:6px;border:1px solid #ddd;margin-bottom:12px}
-    button{padding:10px 14px;border-radius:6px;background:#2563eb;color:#fff;border:none;cursor:pointer}
-    pre{background:#f8fafc;padding:12px;border-radius:8px;overflow:auto}
-    .result{margin-top:18px}
+    :root {
+      --accent: #2563eb;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --bg: #f8fafc;
+      --mono-bg: #f3f4f6;
+    }
+    body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 28px; color: #111827; }
+    h1 { font-size: 30px; margin-bottom: 8px; }
+    p.lead { color: var(--muted); margin-top: 0; margin-bottom: 18px; }
+    .input-row { display:flex; gap:12px; align-items:flex-start; margin-bottom: 16px; }
+    input[type="text"] { flex:1; padding:12px 14px; border-radius:8px; border:1px solid #e5e7eb; font-size:15px; }
+    button { background:var(--accent); color:white; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
+    button:disabled { opacity:0.6; cursor:default; }
+    .result { margin-top: 26px; }
+    .card { background: var(--card); border: 1px solid #e6eefc; padding:18px; border-radius:10px; box-shadow: 0 1px 2px rgba(16,24,40,0.02); }
+    #article { margin-top:12px; padding:18px; background:var(--bg); border-radius:8px; border:1px solid #eef2f7; }
+    #metrics { background: var(--mono-bg); padding:12px; border-radius:8px; overflow:auto; }
+    .spinner { display:inline-block; width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,0.25); border-top-color: rgba(255,255,255,0.9); animation:spin 1s linear infinite; vertical-align:middle; margin-right:8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { color:#b91c1c; margin-top:12px; }
+    .small { font-size:13px; color:var(--muted); }
+    pre { white-space:pre-wrap; word-wrap:break-word; }
   </style>
 </head>
 <body>
   <h1>A Super Simple AI Blog Draft Generator</h1>
-  <p>Enter a competitor blog URL and click Generate. The server will return a review-ready HTML draft and metrics.</p>
+  <p class="lead">Enter a competitor blog URL and click <strong>Generate</strong>. The server returns a review-ready HTML draft and metrics.</p>
 
-  <input id="url" placeholder="https://example.com/some-article" />
-  <div>
+  <div class="input-row">
+    <input id="url" type="text" placeholder="https://example.com/article" value="" aria-label="Competitor URL" />
     <button id="go">Generate</button>
   </div>
 
-  <div class="result" id="result" style="display:none">
-    <h2 id="title"></h2>
-    <div id="html" style="border:1px solid #eee;padding:12px;border-radius:6px;background:#fff"></div>
-    <h3>Metrics</h3>
-    <pre id="metrics"></pre>
+  <div class="small">Tip: press <kbd>Enter</kbd> to run.</div>
+
+  <div id="error" class="error" style="display:none"></div>
+
+  <div class="result">
+    <div id="titleRow" style="display:none; margin-top:18px;">
+      <h2 id="title"></h2>
+    </div>
+
+    <div id="articleCard" class="card" style="display:none;">
+      <div id="article"></div>
+    </div>
+
+    <h3 style="margin-top:18px; display:none;" id="metricsHeading">Metrics</h3>
+    <pre id="metrics" style="display:none"></pre>
   </div>
 
-<script>
-  const ENDPOINT = 'http://localhost:3000/generate';
+  <script>
+    // Configure endpoint here if needed
+    const ENDPOINT = 'http://localhost:3000/generate';
 
-  async function run() {
-    const url = document.getElementById('url').value.trim();
-    if (!url) return alert('Enter a URL');
+    const urlInput = document.getElementById('url');
+    const goBtn = document.getElementById('go');
+    const titleEl = document.getElementById('title');
+    const titleRow = document.getElementById('titleRow');
+    const articleEl = document.getElementById('article');
+    const articleCard = document.getElementById('articleCard');
+    const metricsEl = document.getElementById('metrics');
+    const metricsHeading = document.getElementById('metricsHeading');
+    const errorEl = document.getElementById('error');
 
-    const button = document.getElementById('go');
-    const result = document.getElementById('result');
+    function setLoading(isLoading) {
+      if (isLoading) {
+        goBtn.disabled = true;
+        goBtn.innerHTML = '<span class="spinner" aria-hidden="true"></span>Generating…';
+      } else {
+        goBtn.disabled = false;
+        goBtn.textContent = 'Generate';
+      }
+    }
 
-    button.disabled = true;
-    button.textContent = 'Generating…';
-    result.style.display = 'none';
+    function showError(msg) {
+      errorEl.style.display = 'block';
+      errorEl.textContent = String(msg || 'Unknown error');
+    }
 
-    try {
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
+    function clearError() {
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+    }
+
+    async function run() {
+      clearError();
+      titleRow.style.display = 'none';
+      articleCard.style.display = 'none';
+      metricsEl.style.display = 'none';
+      metricsHeading.style.display = 'none';
+
+      const url = urlInput.value.trim();
+      if (!url) return showError('Please enter a valid URL.');
+
+      setLoading(true);
+
+      try {
+        const res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        const json = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          const msg = json?.error || `${res.status} ${res.statusText}`;
+          throw new Error(msg);
+        }
+
+        if (!json) throw new Error('Invalid JSON response');
+
+        // Title
+        titleEl.textContent = json.title || '';
+
+        // HTML body — use returned html if available, otherwise build from outline or fallback
+        if (json.html) {
+          articleEl.innerHTML = json.html;
+        } else if (json.outline && Array.isArray(json.outline)) {
+          // build a simple article from outline array
+          articleEl.innerHTML = json.outline.map(s => `<h2>${escapeHtml(String(s.title || s))}</h2><p>${escapeHtml(String(s.summary || ''))}</p>`).join('');
+        } else {
+          articleEl.innerHTML = '<p>(no generated HTML returned)</p>';
+        }
+
+        // Metrics
+        const metrics = json.metrics || {};
+        metricsEl.textContent = JSON.stringify(metrics, null, 2);
+
+        // Show UI
+        titleRow.style.display = 'block';
+        articleCard.style.display = 'block';
+        metricsHeading.style.display = 'block';
+        metricsEl.style.display = 'block';
+      } catch (err) {
+        console.error('generate error', err);
+        showError(err.message || err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Escape helper for safety when injecting fallback text
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, function (m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[m];
       });
-
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || JSON.stringify(json));
-
-      document.getElementById('title').textContent = json.title || '';
-      document.getElementById('html').innerHTML = json.html || '<p>(no content)</p>';
-      document.getElementById('metrics').textContent = JSON.stringify(json.metrics, null, 2);
-
-      result.style.display = 'block';
-    } catch (err) {
-      alert('Error: ' + err.message);
-    } finally {
-      button.disabled = false;
-      button.textContent = 'Generate';
     }
-  }
 
-  document.getElementById('go').addEventListener('click', run);
+    // Enter to submit
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        run();
+      }
+    });
 
-  // 🔥 ENTER KEY SUPPORT
-  document.getElementById('url').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      document.getElementById('go').click();
-    }
-  });
-</script>
+    goBtn.addEventListener('click', run);
+
+    // Demo convenience: prefill sample (optional — comment out if undesired)
+    // urlInput.value = 'https://example.com/article-sample';
+
+    // If you want to show endpoint in the UI console for clarity:
+    console.log(`Demo UI loaded — will POST to ${ENDPOINT}`);
+
+  </script>
 </body>
 </html>

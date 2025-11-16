@@ -22,7 +22,7 @@ flowchart TD
   A --> B --> C --> D --> E --> F --> G
 
   %% Side inputs
-  Styleguide[🎨 Styleguide & Vector DB] --- E
+  Styleguide[🎨 Styleguide] --- E
   SEOAPI[🔍 Optional: SERP / Keyword APIs] --- D
 
   %% Feedback loop
@@ -54,7 +54,7 @@ We capture the **shape**, not the **words**:
 - Paragraph blocks  
 - Entities  
 - Meta description  
-- Clean text for embeddings  
+- Clean text for similarity check  
 
 **Why:**  
 This provides a content **blueprint** without violating IP boundaries.
@@ -64,7 +64,7 @@ This provides a content **blueprint** without violating IP boundaries.
 ## 🧠  Semantic Brief
 A deterministic mini-spec:
 - Outline  
-- Tone/style from RAG  
+- Tone/style from styleguide  
 - Content gaps  
 - Simple keyword suggestions  
 
@@ -121,9 +121,17 @@ Meets the brief: a **review-ready** blog entry suitable for editorial approval.
 **Reasoning:** Extremely fast and deterministic, but limited to static HTML. JS-rendered or interactive pages require a fallback (Playwright).
 
 
-## 🎨 Tone & RAG
-- Embeddings of styleguide & past posts  
-**Reasoning:** Strong tone enforcement without inflating prompts.
+## 🎨 Tone & Styleguide Conditioning
+- The pipeline uses a **deterministic, text-based styleguide block** injected directly into prompts.  
+- This ensures Sendmarc’s voice, tone, do/don’ts, formatting, and SEO preferences are always applied the same way.
+
+**Reasoning:**  
+Styleguide injection is chosen instead of RAG because:
+- ⚡ Faster (no embeddings lookup or vector search)  
+- 💲 Cheaper (no vector DB required)  
+- 🔒 Fully deterministic (matches assignment requirement)  
+- 🧱 Perfect for fixed rules like tone, formatting, disclaimers, voice, etc.  
+- 🎯 Reduces prompt size and avoids semantic drift  
 
 ## ✍️ LLM Strategy
 - Small model → outline  
@@ -247,7 +255,7 @@ Includes:
 - Draft generation  
 - Similarity checks  
 - GitHub Action heuristic test  
-- Styleguide RAG corpus  
+- Integrated styleguide prompt block for tone enforcement  
 
 ### 🏃‍♂️‍➡️  Run me on your local
 
@@ -265,7 +273,7 @@ Runs instantly, no API keys, fully deterministic.
 
 1. Run the full demo (server + static UI) with one command:
 
-       npm run demo:local
+       npm run demo:mock
 
 2. Open the UI:
 
@@ -277,10 +285,9 @@ Notes:
 - No API keys required.
 - No network calls.
 - Playwright is disabled automatically.
-- Just a minimal demo.
 
 
-### 🤖 Real LLM Mode (yolo)
+### 🤖 Real LLM Mode (only tested with OpenAI)
 Uses real OpenAI generation for outline + draft.
 
 1. Set environment variables:
@@ -297,7 +304,7 @@ Uses real OpenAI generation for outline + draft.
 
 2. Start the server:
    
-       npm run demo:local
+       npm run demo:auto
 
 3. Open:
 
