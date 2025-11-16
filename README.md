@@ -183,11 +183,12 @@ Styleguide injection is chosen instead of RAG because:
 **Serverless-first design** (e.g., Supabase Functions, Vercel, Cloudflare Workers).
 
 **Reasoning:**
-- 🧱 **Stateless** — each request is independent  
-- 🔁 **Easily automatable** — perfect for scheduled scans or bulk generation  
-- 🧩 **Simple to deploy** — small, single-purpose functions  
-- 💸 **Cost-efficient** — pay only for usage  
-- 🌍 **Scalable** — handles spikes in load with zero config  
+
+- 🧱 **Stateless** — each request is independent
+- 🔁 **Easily automatable** — perfect for scheduled scans or bulk generation
+- 🧩 **Simple to deploy** — small, single-purpose functions
+- 💸 **Cost-efficient** — pay only for usage
+- 🌍 **Scalable** — handles spikes in load with zero config
 
 The current implementation runs locally for simplicity,  
 but the architecture is intentionally built to drop into a serverless environment with minimal changes.
@@ -197,10 +198,11 @@ but the architecture is intentionally built to drop into a serverless environmen
 **GitHub Actions heuristic tests**
 
 **Reasoning:**
-- 🛰️ **Early detection of extraction drift** — catches changes in competitor site templates  
-- 🧪 **Automated regression checks** — ensures fetch/extract logic remains stable  
-- ⚠️ **Flags brittle selectors** before they affect production  
-- 📊 **Lightweight monitoring** without needing full observability tools  
+
+- 🛰️ **Early detection of extraction drift** — catches changes in competitor site templates
+- 🧪 **Automated regression checks** — ensures fetch/extract logic remains stable
+- ⚠️ **Flags brittle selectors** before they affect production
+- 📊 **Lightweight monitoring** without needing full observability tools
 
 A small set of deterministic tests helps guarantee that the pipeline remains reliable as websites evolve.
 
@@ -237,18 +239,20 @@ Weighted checklist (0–100):
 **Ensures:** Search-ready structure.
 
 ---
+
 <div style="page-break-after: always;"></div>
 
 ## 📚 Readability & Tone
 
-- **readability_flesch** (target: 50–70)  
+- **readability_flesch** (target: 50–70)
 - **avg_sentence_length** (target: 12–18 words)
 
-**Why this matters:**  
-- 🗣️ Ensures the article sounds **clear, confident, and professional**  
-- ✂️ Detects overly long or complex sentences that slow readers down  
-- 🎯 Keeps the draft aligned with **Sendmarc’s friendly-professional tone**  
-- 🔍 Helps maintain consistency across all auto-generated articles  
+**Why this matters:**
+
+- 🗣️ Ensures the article sounds **clear, confident, and professional**
+- ✂️ Detects overly long or complex sentences that slow readers down
+- 🎯 Keeps the draft aligned with **Sendmarc’s friendly-professional tone**
+- 🔍 Helps maintain consistency across all auto-generated articles
 
 These lightweight metrics act as guardrails, not constraints — they help the system flag sections that feel off-brand or hard to read, without interfering with the LLM’s creativity.
 
@@ -267,7 +271,7 @@ These lightweight metrics act as guardrails, not constraints — they help the s
 
 ## 📝 Human Rewrite Rate
 
-- **Percentage of drafts requiring significant manual edits**  
+- **Percentage of drafts requiring significant manual edits**
 - **Human feedback after each article** (informal or structured)
 
 **Why this matters:**  
@@ -366,7 +370,7 @@ Runs instantly, no API keys, fully deterministic.
 
 1. Run the full demo (server + static UI) with one command:
 
-   npm run demo:mock
+   `npm run demo:mock`
 
 2. Open the UI:
 
@@ -388,18 +392,18 @@ Uses real OpenAI generation for outline + draft.
 
    Copy the example env file:
 
-   cp .env.example .env
+   `cp .env.example .env`
 
    Open `.env` and add your keys:
 
-   OPENAI_API_KEY=your_openai_api_key
-   CLAUDE_API_KEY=your_claude_api_key
+   `OPENAI_API_KEY=your_openai_api_key`
+   `CLAUDE_API_KEY=your_claude_api_key`
 
 2. Start the pipeline:
 
-   npm run demo:auto
+   `npm run demo:auto`
 
-3. Open:
+3. Go to:
 
    http://localhost:8000/index.html
 
