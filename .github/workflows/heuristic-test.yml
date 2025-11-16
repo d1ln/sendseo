@@ -17,6 +17,8 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm ci
+      - name: Create sample URLs
+        run: echo '["https://example.com"]' > sample_urls.json
       - name: Run heuristic test
         continue-on-error: true
         env:

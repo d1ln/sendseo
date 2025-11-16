@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://example.com/",
+    "needBrowser": false,
+    "title": "Example Domain"
+  },
+  {
+    "url": "https://httpbin.org/html",
+    "needBrowser": false,
+    "title": "Herman Melville - Moby-Dick"
+  },
+  {
+    "url": "https://www.bbc.com/news/world-66700000",
+    "needBrowser": true,
+    "usedFallback": true
+  }
+]
