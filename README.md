@@ -313,14 +313,25 @@ Includes:
 - Integrated styleguide prompt block for tone enforcement
 
 ##### 🏃‍♂️‍➡️ Run me on your local
+**Prerequisites:**
+```
+- Node.js 18+ (LTS recommended)
+- npm 9+
+- Python 3.8+ (required for Playwright browser installation)
+```
 
 1. Clone the repo:
 
+   ```bash
    git clone https://github.com/d1ln/sendseo.git
+   ```
 
-2. Install dependencies:
+2. Install dependencies and build:
 
-   npm install
+   ```bash
+   cd sendseo
+   npm install && npm run build
+   ```
 
 ##### 🧙‍♂️ Mock Mode (no api keys required)
 
@@ -328,11 +339,15 @@ Runs instantly, no API keys, fully deterministic.
 
 1. Run the full demo (server + static UI) with one command:
 
-   `npm run demo:mock`
+   ```bash
+   npm run demo:mock
+   ```
 
 2. Open the UI:
 
+   ```
    http://localhost:8000/index.html
+   ```
 
 3. Paste any competitor blog URL → click Generate → mock draft + metrics appear.
 
@@ -350,20 +365,28 @@ Uses real OpenAI generation for outline + draft.
 
    Copy the example env file:
 
-   `cp .env.example .env`
+   ```bash
+   cp .env.example .env
+   ```
 
    Open `.env` and add your keys:
 
-   `OPENAI_API_KEY=your_openai_api_key`
-   `CLAUDE_API_KEY=your_claude_api_key`
+   ```bash
+   OPENAI_API_KEY=your_openai_api_key
+   CLAUDE_API_KEY=your_claude_api_key
+   ```
 
 2. Start the pipeline:
 
-   `npm run demo:auto`
+   ```bash
+   npm run demo:auto
+   ```
 
 3. Go to:
 
+   ```
    http://localhost:8000/index.html
+   ```
 
 4. Paste any competitor URL → click Generate → LLM-produced draft appears.
 
@@ -375,4 +398,6 @@ Notes:
 
 Verify the server is running:
 
-       curl http://localhost:3000/health
+```bash
+curl http://localhost:3000/health
+```
