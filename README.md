@@ -1,13 +1,15 @@
-# 💭 AI-Assisted Blog Draft Pipeline
+### 💭 AI-Assisted Blog Draft Pipeline
 
-- **🎯 Goal:** Convert a competitor blog URL → a **safe**, **original**, **SEO-aware**, **review-ready** Sendmarc article.
-- **Principles:** 🧠 Pragmatic · 🔒 Safe · ⚙️ Deterministic · 🧭 Thoughtful LLM usage
+- 🎯 Goal: Convert a competitor blog URL → a safe, original, SEO-aware, review-ready Sendmarc article.
+- Principles: 🧠 Pragmatic · 🔒 Safe · ⚙️ Deterministic · 🧭 Thoughtful LLM usage
 
 ---
 
-# 🗺️ 1. System Overview
+#### 🗺️ 1. System Overview
 
-A modular pipeline that extracts conceptual structure from a competitor article (not the phrasing), builds a semantic brief, generates an original draft aligned with Sendmarc’s voice, and validates it through SEO, readability, and safety scoring.
+The system takes a competitor blog URL as input and moves through a structured pipeline designed to convert it into a safe, original, SEO-aligned Sendmarc draft. It begins with Fetch & Sanitize, where the system attempts a fast HTTP fetch using Cheerio and automatically falls back to Playwright when a page requires JavaScript execution. This two-tier approach ensures both speed and completeness while stripping scripts, navigation, and other noise to avoid contaminating downstream prompts. Next, the cleaned HTML passes into Structure Extraction, where only headings, section boundaries, and conceptual cues are captured—not competitor phrasing. This stage exists to ensure intellectual property safety by separating content structure from content wording. The extracted structure feeds into the Semantic Brief, a deterministic mini-spec combining the conceptual outline with Sendmarc’s tone and styleguide rules. The brief formalises the desired voice, content direction, constraints, and SEO considerations, reducing hallucination and aligning the model with brand expectations.
+
+With the brief in place, the system performs Draft Generation, producing the article section-by-section. Each H2 is expanded using a unified LLM prompt that applies styleguide constraints, enforces originality, and requires HTML formatting. The system generates only the article body—clear H2-structured HTML—and does so deterministically through isolated calls to ensure predictability and easier recovery when failures occur. The resulting draft then enters the Safety & QA stage, where semantic similarity checks compare each generated section to the original competitor text, ensuring that no paragraphs or phrasing are too close. HTML normalization is applied to guarantee safe, review-ready markup. Finally, the system compiles a Review-Ready Output containing the article title, structured HTML body, and originality metrics. Additional SEO metadata (slug, meta description, JSON-LD, internal links) can be added as future extensions, but the current output remains intentionally lean to match assignment scope while demonstrating a complete, safe, automatable content-generation pipeline.
 
 ```mermaid
 flowchart TD
@@ -36,22 +38,20 @@ flowchart TD
 
 ---
 
-# 🔄 2. End-to-End Flow
+#### 🔄 End-to-End Flow
 
-## 🧹 Fetch & Sanitize
+##### 🧹 Fetch & Sanitize
 
-- ⚡ **Fast path:** HTTP fetch + Cheerio
-- 🖥️ **Fallback:** Playwright for JS-heavy sites
-- 🧼 **Sanitize:** Remove navigation, ads, scripts
+- ⚡ Fast path: HTTP fetch + Cheerio
+- 🖥️ Fallback: Playwright for JS-heavy sites
+- 🧼 Sanitize: Remove navigation, ads, scripts
 
-**Why:**  
-Keeps extraction **fast**, removes competitor **phrasing**, and avoids LLM contamination.
+Why:  
+Keeps extraction fast, removes competitor phrasing, and avoids LLM contamination.
 
----
+##### 🧩 Extract Structure
 
-## 🧩 Extract Structure
-
-We capture the **shape**, not the **words**:
+We capture the shape, not the words:
 
 - H1–H3
 - Paragraph blocks
@@ -59,14 +59,10 @@ We capture the **shape**, not the **words**:
 - Meta description
 - Clean text for similarity check
 
-**Why:**  
-This provides a content **blueprint** without violating IP boundaries.
+Why:  
+This provides a content blueprint without violating IP boundaries.
 
----
-
-<div style="page-break-after: always;"></div>
-
-## 🧠 Semantic Brief
+##### 🧠 Semantic Brief
 
 A deterministic mini-spec:
 
@@ -75,23 +71,19 @@ A deterministic mini-spec:
 - Content gaps
 - Simple keyword suggestions
 
-**Why:**  
-Reduces hallucination and enforces **brand voice** consistently.
+Why:  
+Reduces hallucination and enforces brand voice consistently.
 
----
-
-## ✍️ Draft Generation
+##### ✍️ Draft Generation
 
 - Section-by-section prompting
 - Styleguide-conditioned tone
 - HTML output with headings, alt text, metadata
 
-**Why:**  
+Why:  
 Controlled generation → higher quality, lower drift, more SEO-structured output.
 
----
-
-## 🛡️ Safety & QA
+##### 🛡️ Safety & QA
 
 Includes:
 
@@ -100,65 +92,55 @@ Includes:
 - 📚 Readability scoring
 - 📝 Optional plagiarism API
 
-**Why:**  
-Ensures **originality**, **quality**, and **structural SEO readiness**.
+Why:  
+Ensures originality, quality, and structural SEO readiness.
 
----
-
-<div style="page-break-after: always;"></div>
-
-## 📤 What the Pipeline Outputs Today
+##### 📤 What the Pipeline Outputs Today
 
 The pipeline currently returns:
 
-- **Title**
-- **Structured article body (HTML)** with H2-level sections
-- **Basic metrics**
+- Title
+- Structured article body (HTML) with H2-level sections
+- Basic metrics
   - Originality score
   - Word count
 
-**Why:**
+Why:
 This keeps the system fast, deterministic, and aligned with the required assignment scope.
 
----
-
-## 🧱 Optional Future Enhancements (Architecturally Supported)
+##### 🧱 Optional Future Enhancements (Architecturally Supported)
 
 The design deliberately anticipates additional SEO and editorial modules.  
-These are **not implemented today**, but the architecture supports plugging them in with minimal changes:
+These are not implemented today, but the architecture supports plugging them in with minimal changes:
 
-- **Meta description generation**
-- **Slug creation**
-- **JSON-LD Article schema**
-- **Internal linking suggestions**
-- **SEO keyword reinforcement**
-- **Automatic alt-text generation**
+- Meta description generation
+- Slug creation
+- JSON-LD Article schema
+- Internal linking suggestions
+- SEO keyword reinforcement
+- Automatic alt-text generation
 
 These would expand the pipeline into a _fully publish-ready_ system, while preserving safety, originality, and tone control.
 
----
+#### 🧱 2. Architecture & Tooling
 
-<div style="page-break-after: always;"></div>
+##### 🧹 Fetching
 
-# 🧱 3. Architecture & Tooling
+- fetch / node-fetch: ⚡ fast http retrieval of static pages
+- Playwright: 🖥️ full JS execution for dynamic sites
+  Reasoning: Optimizes cost → robustness only when required.
 
-## 🧹 Fetching
+##### 🧩 Parsing
 
-- **Cheerio:** ⚡ fast, deterministic
-- **Playwright:** 🖥️ guaranteed completeness when needed  
-  **Reasoning:** Optimizes cost → robustness only when required.
+- Cheerio: fast, deterministic HTML parsing
+  Reasoning: Fast and deterministic, but limited to static HTML. JS-rendered or interactive pages require a fallback (Playwright).
 
-## 🧩 Parsing
+##### 🎨 Tone & Styleguide Conditioning
 
-- Cheerio for structural extraction  
-  **Reasoning:** Fast and deterministic, but limited to static HTML. JS-rendered or interactive pages require a fallback (Playwright).
-
-## 🎨 Tone & Styleguide Conditioning
-
-- The pipeline uses a **deterministic, text-based styleguide block** injected directly into prompts.
+- The pipeline uses a deterministic, text-based styleguide block injected directly into prompts.
 - This ensures Sendmarc’s voice, tone, do/don’ts, formatting, and SEO preferences are always applied the same way.
 
-**Reasoning:**  
+Reasoning:  
 Styleguide injection is chosen instead of RAG because:
 
 - ⚡ Faster (no embeddings lookup or vector search)
@@ -167,65 +149,57 @@ Styleguide injection is chosen instead of RAG because:
 - 🧱 Perfect for fixed rules like tone, formatting, disclaimers, voice, etc.
 - 🎯 Reduces prompt size and avoids semantic drift
 
-## ✍️ LLM Strategy
+##### ✍️ LLM Strategy
 
 - Small model → outline
 - Large model → main draft  
-  **Reasoning:** Cost effective.
+  Reasoning: Cost effective.
 
-## 🛡️ Safety Layer
+##### 🛡️ Safety Layer
 
 - Embedding similarity checks  
-  **Reasoning:** Modern, semantic-level originality scoring.
+  Reasoning: Modern, semantic-level originality scoring.
 
-### ⚙️ Orchestration
+##### ⚙️ Orchestration
 
-**Serverless-first design** (e.g., Supabase Functions, Vercel, Cloudflare Workers).
+Serverless-first design (e.g., Supabase Functions, Vercel, Cloudflare Workers).
 
-**Reasoning:**
+Reasoning:
 
-- 🧱 **Stateless** — each request is independent
-- 🔁 **Easily automatable** — perfect for scheduled scans or bulk generation
-- 🧩 **Simple to deploy** — small, single-purpose functions
-- 💸 **Cost-efficient** — pay only for usage
-- 🌍 **Scalable** — handles spikes in load with zero config
+- 🧱 Stateless — each request is independent
+- 🔁 Easily automatable — perfect for scheduled scans or bulk generation
+- 🧩 Simple to deploy — small, single-purpose functions
+- 💸 Cost-efficient — pay only for usage
+- 🌍 Scalable — handles spikes in load with zero config
 
 The current implementation runs locally for simplicity,  
 but the architecture is intentionally built to drop into a serverless environment with minimal changes.
 
-### 🔧 CI
+##### 🔧 CI
 
-**GitHub Actions heuristic tests**
+GitHub Actions heuristic tests
 
-**Reasoning:**
+Reasoning:
 
-- 🛰️ **Early detection of extraction drift** — catches changes in competitor site templates
-- 🧪 **Automated regression checks** — ensures fetch/extract logic remains stable
-- ⚠️ **Flags brittle selectors** before they affect production
-- 📊 **Lightweight monitoring** without needing full observability tools
+- 🛰️ Early detection of extraction drift — catches changes in competitor site templates
+- 🧪 Automated regression checks — ensures fetch/extract logic remains stable
+- ⚠️ Flags brittle selectors before they affect production
+- 📊 Lightweight monitoring without needing full observability tools
 
 A small set of deterministic tests helps guarantee that the pipeline remains reliable as websites evolve.
 
----
+#### 📊 3. Evaluation & Metrics
 
-<div style="page-break-after: always;"></div>
+Success = original, SEO-structured, tone-aligned, predictable performance.
 
-# 📊 4. Evaluation & Metrics
+##### 🔒 Originality (Safety)
 
-Success = **original**, **SEO-structured**, **tone-aligned**, **predictable performance**.
+- Metric: `originality_max`
+- Threshold: `< 0.85`
+- Method: cosine similarity on embeddings  
+  Ensures: Semantic originality & IP safety.
 
----
-
-## 🔒 Originality (Safety)
-
-- **Metric:** `originality_max`
-- **Threshold:** `< 0.85`
-- **Method:** cosine similarity on embeddings  
-  **Ensures:** Semantic originality & IP safety.
-
----
-
-## 📈 SEO Structure Score
+##### 📈 SEO Structure Score
 
 Weighted checklist (0–100):
 
@@ -235,51 +209,41 @@ Weighted checklist (0–100):
 - Alt text
 - Internal links
 
-**Method:** Deterministic rule engine  
-**Ensures:** Search-ready structure.
+Method: Deterministic rule engine  
+Ensures: Search-ready structure.
 
----
+##### 📚 Readability & Tone
 
-<div style="page-break-after: always;"></div>
+- readability_flesch (target: 50–70)
+- avg_sentence_length (target: 12–18 words)
 
-## 📚 Readability & Tone
+Why this matters:
 
-- **readability_flesch** (target: 50–70)
-- **avg_sentence_length** (target: 12–18 words)
-
-**Why this matters:**
-
-- 🗣️ Ensures the article sounds **clear, confident, and professional**
+- 🗣️ Ensures the article sounds clear, confident, and professional
 - ✂️ Detects overly long or complex sentences that slow readers down
-- 🎯 Keeps the draft aligned with **Sendmarc’s friendly-professional tone**
+- 🎯 Keeps the draft aligned with Sendmarc’s friendly-professional tone
 - 🔍 Helps maintain consistency across all auto-generated articles
 
 These lightweight metrics act as guardrails, not constraints — they help the system flag sections that feel off-brand or hard to read, without interfering with the LLM’s creativity.
 
----
-
-## ⏱️ System Performance
+##### ⏱️ System Performance
 
 - Fast path <5s
 - Fallback <20s
 - Cost per draft should be kept low
 - Fallback rate tracked
 
-**Ensures:** Predictable runtime & cost.
+Ensures: Predictable runtime & cost.
 
----
+##### 📝 Human Rewrite Rate
 
-## 📝 Human Rewrite Rate
+- Percentage of drafts requiring significant manual edits
+- Human feedback after each article (informal or structured)
 
-- **Percentage of drafts requiring significant manual edits**
-- **Human feedback after each article** (informal or structured)
-
-**Why this matters:**  
+Why this matters:  
 Tracks whether the system is producing review-ready content consistently, and highlights where prompts or extraction may need refinement.
 
----
-
-## 📡 Monitoring (Notional)
+##### 📡 Monitoring (Notional)
 
 The system can track:
 
@@ -291,11 +255,7 @@ The system can track:
 
 Lightweight and effective — no heavy SEO tooling needed.
 
----
-
-<div style="page-break-after: always;"></div>
-
-# 🚀 5. Next Steps (Future Work)
+#### 🚀 Next Steps (Future Work)
 
 - TF-IDF / n-gram keyword extraction
 - SERP difficulty scoring
@@ -303,9 +263,9 @@ Lightweight and effective — no heavy SEO tooling needed.
 - Topic clustering
 - Automated fact checking
 
-**Why:** These add value but exceed assignment scope.
+Why: These add value but exceed assignment scope.
 
-### ⚡ Potential Performance Enhancements
+##### ⚡ Potential Performance Enhancements
 
 The architecture supports adding speed-oriented features such as:
 
@@ -317,31 +277,29 @@ The architecture supports adding speed-oriented features such as:
 
 These are not implemented today, but the system is structured so they can be added with minimal refactoring.
 
-### 🕷️ Maybe also: add a competitor crawler
+##### 🕷️ Maybe also: add a competitor crawler
 
 A crawler could periodically discover and ingest competitor posts automatically instead of relying on manually supplied URLs.
 
-**Benefits:**
+Benefits:
 
 - Builds a continuously updated competitor content library
 - Enables topic clustering and long-term trend analysis
 - Supports automated gap detection across multiple domains
 - Powers bulk testing of extraction and generation logic
 
-**Reasonings & Risks:**
+Reasonings & Risks:
 
 - Must respect robots.txt and legal boundaries
 - Requires scheduling, caching, and storage infrastructure
 - Increased operational cost and complexity
 - Extraction drift must be monitored across many templates
 
-**Why not included now:**  
+Why not included now:  
 A crawler is valuable but extends beyond the assignment’s scope.  
 The system remains URL-driven, simple, and deterministic, while a crawler can be layered on later as a separate subsystem.
 
----
-
-# 🧪 6. Let's Code
+#### 🧪 4. Let's Code
 
 Includes:
 
@@ -354,7 +312,7 @@ Includes:
 - GitHub Action heuristic test
 - Integrated styleguide prompt block for tone enforcement
 
-### 🏃‍♂️‍➡️ Run me on your local
+##### 🏃‍♂️‍➡️ Run me on your local
 
 1. Clone the repo:
 
@@ -364,7 +322,7 @@ Includes:
 
    npm install
 
-### 🧙‍♂️ Mock Mode (no api keys required)
+##### 🧙‍♂️ Mock Mode (no api keys required)
 
 Runs instantly, no API keys, fully deterministic.
 
@@ -376,7 +334,7 @@ Runs instantly, no API keys, fully deterministic.
 
    http://localhost:8000/index.html
 
-3. Paste any competitor blog URL → click **Generate** → mock draft + metrics appear.
+3. Paste any competitor blog URL → click Generate → mock draft + metrics appear.
 
 Notes:
 
@@ -384,7 +342,7 @@ Notes:
 - No network calls.
 - Playwright is disabled automatically.
 
-### 🤖 Real LLM Mode (only tested with OpenAI)
+#### 🤖 Real LLM Mode (only tested with OpenAI)
 
 Uses real OpenAI generation for outline + draft.
 
@@ -407,13 +365,13 @@ Uses real OpenAI generation for outline + draft.
 
    http://localhost:8000/index.html
 
-4. Paste any competitor URL → click **Generate** → LLM-produced draft appears.
+4. Paste any competitor URL → click Generate → LLM-produced draft appears.
 
 Notes:
 
 - Real LLM mode costs tokens.
 
-### 🩻 Health Check
+##### 🩻 Health Check
 
 Verify the server is running:
 

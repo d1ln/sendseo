@@ -1,5 +1,5 @@
 // tests/test-extract.ts
-import { extractStructure } from '../extract';
+import { extractStructure } from "../extract";
 
 const SAMPLE_HTML = `
 <div id="primary" class="content-area col-md-9">
@@ -50,11 +50,14 @@ const SAMPLE_HTML = `
 
 async function run() {
   try {
-    const extracted = extractStructure(SAMPLE_HTML, 'https://www.domains.co.za/blog/reddit-vs-perplexity/');
-    console.log('=== EXTRACTED ===');
+    const extracted = extractStructure(
+      SAMPLE_HTML,
+      "https://www.domains.co.za/blog/reddit-vs-perplexity/",
+    );
+    console.log("=== EXTRACTED ===");
     console.log(JSON.stringify(extracted, null, 2));
   } catch (err) {
-    console.error('extract test failed', err);
+    console.error("extract test failed", err);
   }
 }
 

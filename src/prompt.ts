@@ -3,11 +3,11 @@
 // Both OpenAI and Claude clients should import and use these functions.
 
 export const STYLEGUIDE = [
-  'Voice: friendly-professional, concise, second-person where helpful.',
-  'Tone: authoritative but approachable.',
-  'Structure: short intro (50–80 words), H2 sections 150–300 words, clear conclusion with CTA.',
-  'Do NOT: use competitor phrasing verbatim, include external links or <a> tags, produce unverifiable claims, overuse passive voice.',
-].join(' ');
+  "Voice: friendly-professional, concise, second-person where helpful.",
+  "Tone: authoritative but approachable.",
+  "Structure: short intro (50–80 words), H2 sections 150–300 words, clear conclusion with CTA.",
+  "Do NOT: use competitor phrasing verbatim, include external links or <a> tags, produce unverifiable claims, overuse passive voice.",
+].join(" ");
 
 /**
  * Returns a single-string prompt to request a JSON outline.
@@ -15,19 +15,19 @@ export const STYLEGUIDE = [
  */
 export function outlinePrompt(briefJson: string): string {
   return [
-    'You are an expert Sendmarc content strategist.',
-    '',
-    'STYLE GUIDE:',
+    "You are an expert Sendmarc content strategist.",
+    "",
+    "STYLE GUIDE:",
     STYLEGUIDE,
-    '',
-    'ABSOLUTE RULES:',
-    '- Return ONLY valid JSON. No surrounding commentary. No markdown. No code fences.',
-    '- Do NOT include hyperlinks (no <a> tags, no URLs).',
-    '- Do NOT invent statistics, quotes, or unverifiable claims.',
-    '',
-    'TASK:',
-    'Given the semantic brief below, produce a single JSON object with this shape:',
-    '',
+    "",
+    "ABSOLUTE RULES:",
+    "- Return ONLY valid JSON. No surrounding commentary. No markdown. No code fences.",
+    "- Do NOT include hyperlinks (no <a> tags, no URLs).",
+    "- Do NOT invent statistics, quotes, or unverifiable claims.",
+    "",
+    "TASK:",
+    "Given the semantic brief below, produce a single JSON object with this shape:",
+    "",
     `{
   "outline": [
     { "h2": "Heading text", "suggested_word_count": 180 }
@@ -35,10 +35,10 @@ export function outlinePrompt(briefJson: string): string {
   "key_points": ["short bullet 1", "short bullet 2", "short bullet 3"],
   "notes": "optional short note for editor"
 }`,
-    '',
-    'BRIEF:',
+    "",
+    "BRIEF:",
     briefJson,
-  ].join('\n');
+  ].join("\n");
 }
 
 /**
@@ -47,26 +47,26 @@ export function outlinePrompt(briefJson: string): string {
  */
 export function sectionPrompt(h2: string, contextJson: string): string {
   return [
-    'You are an expert Sendmarc content writer.',
-    '',
-    'WRITE ONE SECTION for the H2 below. Return RAW HTML ONLY.',
-    'Do NOT output markdown, code fences, or backticks. Do NOT wrap your answer in ```html.',
-    '',
-    'STYLE GUIDE:',
+    "You are an expert Sendmarc content writer.",
+    "",
+    "WRITE ONE SECTION for the H2 below. Return RAW HTML ONLY.",
+    "Do NOT output markdown, code fences, or backticks. Do NOT wrap your answer in ```html.",
+    "",
+    "STYLE GUIDE:",
     STYLEGUIDE,
-    '',
-    'ABSOLUTE RULES:',
-    '- Output HTML fragment only (no full page wrapper).',
-    '- Do NOT include hyperlinks or <a> tags. No URLs.',
-    '- Do NOT copy competitor phrasing verbatim.',
-    '- Use active voice and second-person where helpful.',
-    '- Keep paragraph lengths short; target 150–300 words for the section.',
-    '',
+    "",
+    "ABSOLUTE RULES:",
+    "- Output HTML fragment only (no full page wrapper).",
+    "- Do NOT include hyperlinks or <a> tags. No URLs.",
+    "- Do NOT copy competitor phrasing verbatim.",
+    "- Use active voice and second-person where helpful.",
+    "- Keep paragraph lengths short; target 150–300 words for the section.",
+    "",
     `H2: ${h2}`,
-    '',
-    'CONTEXT (JSON):',
+    "",
+    "CONTEXT (JSON):",
     contextJson,
-    '',
-    'Now produce the HTML for this section (start with <h2> if appropriate).',
-  ].join('\n');
+    "",
+    "Now produce the HTML for this section (start with <h2> if appropriate).",
+  ].join("\n");
 }
