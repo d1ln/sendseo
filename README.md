@@ -392,7 +392,7 @@ Uses real OpenAI generation for outline + draft.
 
 Notes:
 
-- Real LLM mode costs tokens.
+- Real LLM mode costs tokens
 
 ##### 🩻 Health Check
 
