@@ -1,19 +1,19 @@
 ### 💭 AI-Assisted Blog Draft Pipeline
 
-- 🎯 Goal: Convert a competitor blog URL → a safe, original, SEO-aware, review-ready blog article.
+- 🎯 Goal: Convert a source blog URL → a safe, original, SEO-aware, review-ready blog article.
 - Principles: 🧠 Pragmatic · 🔒 Safe · ⚙️ Deterministic · 🧭 Thoughtful LLM usage
 
 ---
 
 #### 🗺️ 1. System Overview
 
-The system takes a competitor blog URL as input and moves through a structured pipeline designed to convert it into a safe, original, SEO-aligned blog draft. It begins with Fetch & Sanitize, where the system attempts a fast HTTP fetch using Cheerio and automatically falls back to Playwright when a page requires JavaScript execution. This two-tier approach ensures both speed and completeness while stripping scripts, navigation, and other noise to avoid contaminating downstream prompts. Next, the cleaned HTML passes into Structure Extraction, where only headings, section boundaries, and conceptual cues are captured—not competitor phrasing. This stage exists to ensure intellectual property safety by separating content structure from content wording. The extracted structure feeds into the Semantic Brief, a deterministic mini-spec combining the conceptual outline. The brief formalises the desired voice, content direction, constraints, and SEO considerations, reducing hallucination and aligning the model with brand expectations.
+The system takes a source blog URL as input and moves through a structured pipeline designed to convert it into a safe, original, SEO-aligned blog draft. It begins with Fetch & Sanitize, where the system attempts a fast HTTP fetch using Cheerio and automatically falls back to Playwright when a page requires JavaScript execution. This two-tier approach ensures both speed and completeness while stripping scripts, navigation, and other noise to avoid contaminating downstream prompts. Next, the cleaned HTML passes into Structure Extraction, where only headings, section boundaries, and conceptual cues are captured—not. This stage exists to ensure intellectual property safety by separating content structure from content wording. The extracted structure feeds into the Semantic Brief, a deterministic mini-spec combining the conceptual outline. The brief formalises the desired voice, content direction, constraints, and SEO considerations, reducing hallucination and aligning the model with brand expectations.
 
 With the brief in place, the system performs Draft Generation, producing the article section-by-section. Each H2 is expanded using a unified LLM prompt that applies styleguide constraints, enforces originality, and requires HTML formatting. The system generates only the article body—clear H2-structured HTML—and does so deterministically through isolated calls to ensure predictability and easier recovery when failures occur. The resulting draft then enters the Safety & QA stage, where semantic similarity checks compare each generated section to the original competitor text, ensuring that no paragraphs or phrasing are too close. HTML normalization is applied to guarantee safe, review-ready markup. Finally, the system compiles a Review-Ready Output containing the article title, structured HTML body, and originality metrics. Additional SEO metadata (slug, meta description, JSON-LD, internal links) can be added as future extensions, but the current output remains intentionally lean to match assignment scope while demonstrating a complete, safe, automatable content-generation pipeline.
 
 ```mermaid
 flowchart TD
-  A[📥 Input: Competitor URL]
+  A[📥 Input: Source URL]
   B[🧹 Fetch & Sanitize]
   C[🧩 Extract Structure]
   D[🧠 Semantic Brief]
@@ -47,7 +47,7 @@ flowchart TD
 - 🧼 Sanitize: Remove navigation, ads, scripts
 
 Why:  
-Keeps extraction fast, removes competitor phrasing, and avoids LLM contamination.
+Keeps extraction fast, removes source phrasing, and avoids LLM contamination.
 
 ##### 🧩 Extract Structure
 
@@ -181,7 +181,7 @@ GitHub Actions heuristic tests
 
 Reasoning:
 
-- 🛰️ Early detection of extraction drift — catches changes in competitor site templates
+- 🛰️ Early detection of extraction drift — catches changes in source site templates
 - 🧪 Automated regression checks — ensures fetch/extract logic remains stable
 - ⚠️ Flags brittle selectors before they affect production
 - 📊 Lightweight monitoring without needing full observability tools
@@ -277,13 +277,13 @@ The architecture supports adding speed-oriented features such as:
 
 These are not implemented today, but the system is structured so they can be added with minimal refactoring.
 
-##### 🕷️ Maybe also: add a competitor crawler
+##### 🕷️ Maybe also: add a site crawler
 
-A crawler could periodically discover and ingest competitor posts automatically instead of relying on manually supplied URLs.
+A crawler could periodically discover and ingest posts automatically instead of relying on manually supplied URLs.
 
 Benefits:
 
-- Builds a continuously updated competitor content library
+- Builds a continuously updated source content library
 - Enables topic clustering and long-term trend analysis
 - Supports automated gap detection across multiple domains
 - Powers bulk testing of extraction and generation logic
@@ -349,7 +349,7 @@ Runs instantly, no API keys, fully deterministic.
    http://localhost:8000/index.html
    ```
 
-3. Paste any competitor blog URL → click Generate → mock draft + metrics appear.
+3. Paste any source blog URL → click Generate → mock draft + metrics appear.
 
 Notes:
 
@@ -388,7 +388,7 @@ Uses real OpenAI generation for outline + draft.
    http://localhost:8000/index.html
    ```
 
-4. Paste any competitor URL → click Generate → LLM-produced draft appears.
+4. Paste any source URL → click Generate → LLM-produced draft appears.
 
 Notes:
 
