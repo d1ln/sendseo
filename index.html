@@ -32,7 +32,7 @@
 </head>
 <body>
   <h1>A Super Simple AI Blog Draft Generator</h1>
-  <p class="lead">Enter a competitor blog URL and click <strong>Generate</strong>. The server returns a review-ready HTML draft and metrics.</p>
+  <p class="lead"> Demo running in <strong>Mock Mode</strong>. Enter a URL and click Generate.</p>
 
   <div class="input-row">
     <input id="url" type="text" placeholder="https://example.com/article" value="" aria-label="Competitor URL" />
@@ -59,6 +59,28 @@
   <script>
     // Configure endpoint here if needed
     const ENDPOINT = 'http://localhost:3000/generate';
+
+    const MOCK_MODE = true;
+
+    function mockGenerate(url) {
+      return {
+        title: "AI-Generated Blog Draft",
+        html: `
+          <h2>Introduction</h2>
+          <p>This is a mock-generated article based on the provided URL: ${escapeHtml(url)}.</p>
+    
+          <h2>Key Insights</h2>
+          <p>The system extracts structure and generates original content while maintaining consistent tone and formatting.</p>
+    
+          <h2>Conclusion</h2>
+          <p>This demonstrates how the pipeline produces structured, review-ready content safely and deterministically.</p>
+        `,
+        metrics: {
+          originality: 0.91,
+          word_count: 120
+        }
+      };
+    }
 
     const urlInput = document.getElementById('url');
     const goBtn = document.getElementById('go');
@@ -104,9 +126,26 @@
 
       try {
         const res = await fetch(ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
+          let json;
+
+          if (MOCK_MODE) {
+            json = mockGenerate(url);
+          } else {
+            const res = await fetch(ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url })
+            });
+          
+            json = await res.json().catch(() => null);
+          
+            if (!res.ok) {
+              const msg = json?.error || `${res.status} ${res.statusText}`;
+              throw new Error(msg);
+            }
+          
+            if (!json) throw new Error('Invalid JSON response');
+          }
         });
 
         const json = await res.json().catch(() => null);
