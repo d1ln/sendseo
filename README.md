@@ -1,13 +1,13 @@
 ### 💭 AI-Assisted Blog Draft Pipeline
 
-- 🎯 Goal: Convert a competitor blog URL → a safe, original, SEO-aware, review-ready Sendmarc article.
+- 🎯 Goal: Convert a competitor blog URL → a safe, original, SEO-aware, review-ready blog article.
 - Principles: 🧠 Pragmatic · 🔒 Safe · ⚙️ Deterministic · 🧭 Thoughtful LLM usage
 
 ---
 
 #### 🗺️ 1. System Overview
 
-The system takes a competitor blog URL as input and moves through a structured pipeline designed to convert it into a safe, original, SEO-aligned Sendmarc draft. It begins with Fetch & Sanitize, where the system attempts a fast HTTP fetch using Cheerio and automatically falls back to Playwright when a page requires JavaScript execution. This two-tier approach ensures both speed and completeness while stripping scripts, navigation, and other noise to avoid contaminating downstream prompts. Next, the cleaned HTML passes into Structure Extraction, where only headings, section boundaries, and conceptual cues are captured—not competitor phrasing. This stage exists to ensure intellectual property safety by separating content structure from content wording. The extracted structure feeds into the Semantic Brief, a deterministic mini-spec combining the conceptual outline with Sendmarc’s tone and styleguide rules. The brief formalises the desired voice, content direction, constraints, and SEO considerations, reducing hallucination and aligning the model with brand expectations.
+The system takes a competitor blog URL as input and moves through a structured pipeline designed to convert it into a safe, original, SEO-aligned blog draft. It begins with Fetch & Sanitize, where the system attempts a fast HTTP fetch using Cheerio and automatically falls back to Playwright when a page requires JavaScript execution. This two-tier approach ensures both speed and completeness while stripping scripts, navigation, and other noise to avoid contaminating downstream prompts. Next, the cleaned HTML passes into Structure Extraction, where only headings, section boundaries, and conceptual cues are captured—not competitor phrasing. This stage exists to ensure intellectual property safety by separating content structure from content wording. The extracted structure feeds into the Semantic Brief, a deterministic mini-spec combining the conceptual outline. The brief formalises the desired voice, content direction, constraints, and SEO considerations, reducing hallucination and aligning the model with brand expectations.
 
 With the brief in place, the system performs Draft Generation, producing the article section-by-section. Each H2 is expanded using a unified LLM prompt that applies styleguide constraints, enforces originality, and requires HTML formatting. The system generates only the article body—clear H2-structured HTML—and does so deterministically through isolated calls to ensure predictability and easier recovery when failures occur. The resulting draft then enters the Safety & QA stage, where semantic similarity checks compare each generated section to the original competitor text, ensuring that no paragraphs or phrasing are too close. HTML normalization is applied to guarantee safe, review-ready markup. Finally, the system compiles a Review-Ready Output containing the article title, structured HTML body, and originality metrics. Additional SEO metadata (slug, meta description, JSON-LD, internal links) can be added as future extensions, but the current output remains intentionally lean to match assignment scope while demonstrating a complete, safe, automatable content-generation pipeline.
 
@@ -138,7 +138,7 @@ These would expand the pipeline into a _fully publish-ready_ system, while prese
 ##### 🎨 Tone & Styleguide Conditioning
 
 - The pipeline uses a deterministic, text-based styleguide block injected directly into prompts.
-- This ensures Sendmarc’s voice, tone, do/don’ts, formatting, and SEO preferences are always applied the same way.
+- This ensures ’s voice, tone, do/don’ts, formatting, and SEO preferences are always applied the same way.
 
 Reasoning:  
 Styleguide injection is chosen instead of RAG because:
@@ -221,7 +221,7 @@ Why this matters:
 
 - 🗣️ Ensures the article sounds clear, confident, and professional
 - ✂️ Detects overly long or complex sentences that slow readers down
-- 🎯 Keeps the draft aligned with Sendmarc’s friendly-professional tone
+- 🎯 Keeps the draft aligned with a friendly-professional tone
 - 🔍 Helps maintain consistency across all auto-generated articles
 
 These lightweight metrics act as guardrails, not constraints — they help the system flag sections that feel off-brand or hard to read, without interfering with the LLM’s creativity.
