@@ -153,7 +153,7 @@
       // Configure endpoint here if needed
       const ENDPOINT = 'http://localhost:3000/generate';
 
-      const MOCK_MODE = true;
+      const MOCK_MODE = new URLSearchParams(window.location.search).get("mock") === "true";
 
       function mockGenerate(url) {
         return {
